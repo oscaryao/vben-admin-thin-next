@@ -2,7 +2,12 @@ module.exports = {
   root: true,
   plugins: ['stylelint-order'],
   customSyntax: 'postcss-less',
-  extends: ['stylelint-config-standard', 'stylelint-config-prettier'],
+  extends: [
+    'stylelint-config-standard',
+    'stylelint-config-prettier',
+    'stylelint-config-html/vue',
+    'stylelint-config-recommended-vue',
+  ],
   rules: {
     'selector-class-pattern': null,
     'selector-pseudo-class-no-unknown': [
@@ -14,7 +19,7 @@ module.exports = {
     'selector-pseudo-element-no-unknown': [
       true,
       {
-        ignorePseudoElements: ['v-deep'],
+        ignorePseudoElements: ['v-deep', ':deep'],
       },
     ],
     'at-rule-no-unknown': [
@@ -34,6 +39,9 @@ module.exports = {
         ],
       },
     ],
+    'property-no-unknown': null,
+    'function-no-unknown': null,
+    'selector-type-no-unknown': null,
     'no-empty-source': null,
     'named-grid-areas-no-invalid': null,
     'unicode-bom': 'never',
@@ -68,7 +76,7 @@ module.exports = {
       { severity: 'warning' },
     ],
   },
-  ignoreFiles: ['**/*.js', '**/*.jsx', '**/*.tsx', '**/*.ts'],
+  ignoreFiles: ['**/*.js', '**/*.jsx', '**/*.tsx', '**/*.ts', '**/*.json'],
   overrides: [
     {
       files: ['*.vue', '**/*.vue'],
