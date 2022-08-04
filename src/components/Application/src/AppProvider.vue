@@ -8,10 +8,14 @@
 
   const props = {
     /**
-     * class style prefix
+     * class style prefix default 'vben'
      */
     prefixCls: { type: String, default: prefixCls },
   };
+
+  /**
+   * defineComponent 对使用的类，增加代码提示和类型对端
+   */
 
   export default defineComponent({
     name: 'AppProvider',

@@ -1,4 +1,5 @@
 <template>
+  <!-- 为组件提供统一的全局化配置 -->
   <ConfigProvider :locale="getAntdLocale">
     <AppProvider>
       <RouterView />

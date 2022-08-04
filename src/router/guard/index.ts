@@ -129,7 +129,10 @@ export function createMessageGuard(router: Router) {
     return true;
   });
 }
-
+/**
+ * 显示处理进度守卫
+ * @param router
+ */
 export function createProgressGuard(router: Router) {
   const { getOpenNProgress } = useTransitionSetting();
   router.beforeEach(async (to) => {

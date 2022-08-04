@@ -78,7 +78,12 @@ export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormal
       : undefined) as RouteRecordNormalized[],
   };
 }
-
+/**
+ * 把组件安装到vue
+ * @param component 要安装到vue的组件
+ * @param alias 把组件注册到全局属性别名
+ * @returns 返回安装后的组件
+ */
 export const withInstall = <T>(component: T, alias?: string) => {
   const comp = component as any;
   comp.install = (app: App) => {

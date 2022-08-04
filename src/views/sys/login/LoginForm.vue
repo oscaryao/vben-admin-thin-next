@@ -139,6 +139,26 @@
         username: data.account,
         mode: 'none', //不要默认的错误提示
       });
+      /**
+       * 返回登陆信息 userInfo
+          export interface GetUserInfoModel {
+            roles: RoleInfo[];
+            // 用户id
+            userId: string | number;
+            // 用户名
+            username: string;
+            // 真实名字
+            realName: string;
+            // 头像
+            avatar: string;
+            // 介绍
+            desc?: string;
+          }
+          export interface RoleInfo {
+            roleName: string;
+            value: string;
+          }
+       */
       if (userInfo) {
         notification.success({
           message: t('sys.login.loginSuccessTitle'),

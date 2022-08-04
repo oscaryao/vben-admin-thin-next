@@ -6,9 +6,14 @@ import { usePermissionStore } from '/@/store/modules/permission';
 import { PageEnum } from '/@/enums/pageEnum';
 import { removeTabChangeListener } from '/@/logics/mitt/routeChange';
 
+/**
+ * 进入登陆页面则清楚所有相关信息
+ * @param router
+ */
 export function createStateGuard(router: Router) {
   router.afterEach((to) => {
     // Just enter the login page and clear the authentication information
+    // 进入登陆页面则清楚所有相关信息
     if (to.path === PageEnum.BASE_LOGIN) {
       const tabStore = useMultipleTabStore();
       const userStore = useUserStore();

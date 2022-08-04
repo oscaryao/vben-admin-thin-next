@@ -35,6 +35,10 @@ interface PermissionState {
   backMenuList: Menu[];
   frontMenuList: Menu[];
 }
+
+/**
+ * 创建一个 名称为 'app-permission' 的pinia store
+ */
 export const usePermissionStore = defineStore({
   id: 'app-permission',
   state: (): PermissionState => ({
@@ -92,26 +96,34 @@ export const usePermissionStore = defineStore({
       this.backMenuList = [];
       this.lastBuildMenuTime = 0;
     },
+    /**
+     * 从后台重新过去权限码并更新
+     */
     async changePermissionCode() {
       const codeList = await getPermCode();
       this.setPermCodeList(codeList);
     },
+    /**
+     * 创建路由逻辑 如果是后台动态生成路由则在此函数动态处理
+     * @returns
+     */
     async buildRoutesAction(): Promise<AppRouteRecordRaw[]> {
       const { t } = useI18n();
       const userStore = useUserStore();
       const appStore = useAppStoreWithOut();
 
       let routes: AppRouteRecordRaw[] = [];
+      //从store中获取角色列表
       const roleList = toRaw(userStore.getRoleList) || [];
       const { permissionMode = projectSetting.permissionMode } = appStore.getProjectConfig;
-
+      //定义角色过滤器 如果route包含在roleList里则返回 true
       const routeFilter = (route: AppRouteRecordRaw) => {
         const { meta } = route;
         const { roles } = meta || {};
         if (!roles) return true;
         return roleList.some((role) => roles.includes(role));
       };
-
+      // 根据路由meta中的ignoreRoute过滤掉 不是menu 的路由
       const routeRemoveIgnoreFilter = (route: AppRouteRecordRaw) => {
         const { meta } = route;
         const { ignoreRoute } = meta || {};
@@ -172,6 +184,7 @@ export const usePermissionStore = defineStore({
           break;
 
         //  If you are sure that you do not need to do background dynamic permissions, please comment the entire judgment below
+        // 如果确定不需要做后台动态权限，请在下方评论整个判断
         case PermissionModeEnum.BACK:
           const { createMessage } = useMessage();
 
@@ -182,18 +195,24 @@ export const usePermissionStore = defineStore({
 
           // !Simulate to obtain permission codes from the background,
           // this function may only need to be executed once, and the actual project can be put at the right time by itself
+          // !模拟从后台获取权限码，
+          // 这个功能可能只需要执行一次，实际项目可以自己放在合适的时间
           let routeList: AppRouteRecordRaw[] = [];
           try {
+            //从后台更新权限码
             this.changePermissionCode();
+            //根据token获取菜单
             routeList = (await getMenuList()) as AppRouteRecordRaw[];
           } catch (error) {
             console.error(error);
           }
 
           // Dynamically introduce components
+          // 动态引入组件 也就是子组件 异步引用
           routeList = transformObjToRoute(routeList);
 
           //  Background routing to menu structure
+          // 根据路由生成菜单
           const backMenuList = transformRouteToMenu(routeList);
           this.setBackMenuList(backMenuList);
 
@@ -213,7 +232,10 @@ export const usePermissionStore = defineStore({
   },
 });
 
-// Need to be used outside the setup
+/**
+ * 创建一个 名称为 'app-permission' 的pinia store
+ * Need to be used outside the setup
+ */
 export function usePermissionStoreWithOut() {
   return usePermissionStore(store);
 }

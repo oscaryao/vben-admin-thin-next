@@ -25,6 +25,7 @@ export function createPermissionGuard(router: Router) {
       userStore.getUserInfo.homePath &&
       userStore.getUserInfo.homePath !== PageEnum.BASE_HOME
     ) {
+      // from 是 '/' to 是 '/dashboard' 并且已经登陆 直接导航
       next(userStore.getUserInfo.homePath);
       return;
     }
@@ -89,7 +90,10 @@ export function createPermissionGuard(router: Router) {
         return;
       }
     }
-
+    /**
+     * 如果动态生成路由则向下传递，因为动态路由是由后端根据用户的权限生成匹配权限的路由，
+     * 前端权限守卫不再做权限和路由的匹配
+     */
     if (permissionStore.getIsDynamicAddedRoute) {
       next();
       return;

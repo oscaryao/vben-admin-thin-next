@@ -24,7 +24,10 @@ interface UserState {
   sessionTimeout?: boolean;
   lastUpdateTime: number;
 }
-
+/**
+ * defineStore with name 'app-user'
+ * that has userInfo、token、roleList、sessionTimeout、lastUpdateTime
+ */
 export const useUserStore = defineStore({
   id: 'app-user',
   state: (): UserState => ({
@@ -61,6 +64,10 @@ export const useUserStore = defineStore({
       this.token = info ? info : ''; // for null or undefined value
       setAuthCache(TOKEN_KEY, info);
     },
+    /**
+     * setRole to sotre
+     * @param roleList
+     */
     setRoleList(roleList: RoleEnum[]) {
       this.roleList = roleList;
       setAuthCache(ROLES_KEY, roleList);
@@ -81,6 +88,9 @@ export const useUserStore = defineStore({
     },
     /**
      * @description: login
+     * 1.loginApi
+     * 2.save token
+     * 3.afterLoginAction
      */
     async login(
       params: LoginParams & {
@@ -95,14 +105,20 @@ export const useUserStore = defineStore({
 
         // save token
         this.setToken(token);
+        // save userinfo roleinfo
         return this.afterLoginAction(goHome);
       } catch (error) {
         return Promise.reject(error);
       }
     },
+    /**
+     * 1.getUserInfoAction
+     * @param goHome
+     * @returns
+     */
     async afterLoginAction(goHome?: boolean): Promise<GetUserInfoModel | null> {
       if (!this.getToken) return null;
-      // get user info
+      // get user info , save roles and user info
       const userInfo = await this.getUserInfoAction();
 
       const sessionTimeout = this.sessionTimeout;
@@ -111,17 +127,26 @@ export const useUserStore = defineStore({
       } else {
         const permissionStore = usePermissionStore();
         if (!permissionStore.isDynamicAddedRoute) {
+          //动态生成路由
           const routes = await permissionStore.buildRoutesAction();
           routes.forEach((route) => {
             router.addRoute(route as unknown as RouteRecordRaw);
           });
           router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
+          //设置动态路由标志
           permissionStore.setDynamicAddedRoute(true);
         }
+        //跳转到指定的主页
         goHome && (await router.replace(userInfo?.homePath || PageEnum.BASE_HOME));
       }
       return userInfo;
     },
+    /**
+     * 1.getUserInfo va api
+     * 2.setRoleList 保存角色信息到 user store
+     * 3.setUserInfo 保存用户信息到 User store
+     * @returns
+     */
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
       const userInfo = await getUserInfo();
@@ -171,7 +196,11 @@ export const useUserStore = defineStore({
   },
 });
 
-// Need to be used outside the setup
+/**
+ * Need to be used outside the setup
+ * 创建一个名称是 'app-user' 的 pinia store
+ * @returns
+ */
 export function useUserStoreWithOut() {
   return useUserStore(store);
 }
